@@ -1,3 +1,4 @@
+/*
 package com.learn.auth.jwt.jwttokenauthorization.service;
 
 import org.springframework.security.core.userdetails.User;
@@ -15,3 +16,4 @@ public class MyUserDetailsService implements UserDetailsService {
     return new User("user", "pass", new ArrayList<>());
   }
 }
+*/
