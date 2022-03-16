@@ -3,6 +3,7 @@ package com.learn.auth.jwt.jwttokenauthorization.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,8 @@ public class JwtToken implements Serializable {
 
   public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
-  private String secret = "secret";
+  @Value("${jwt.secret}")
+  private String secret;
 
   public String getUsernameFromToken(String token) {
 
