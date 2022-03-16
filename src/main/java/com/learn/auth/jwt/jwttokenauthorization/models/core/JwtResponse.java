@@ -1,4 +1,4 @@
-package com.learn.auth.jwt.jwttokenauthorization.models;
+package com.learn.auth.jwt.jwttokenauthorization.models.core;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +13,9 @@ public class JwtResponse implements Serializable {
 
   private final String token;
 
-  public JwtResponse(String jwttoken) {
+  public JwtResponse(String jwtToken) {
 
-    this.token = jwttoken;
+    this.token = jwtToken;
 
   }
 

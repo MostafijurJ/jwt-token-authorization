@@ -1,8 +1,8 @@
 package com.learn.auth.jwt.jwttokenauthorization.controller;
 
-import com.learn.auth.jwt.jwttokenauthorization.models.JwtRequest;
-import com.learn.auth.jwt.jwttokenauthorization.models.JwtResponse;
-import com.learn.auth.jwt.jwttokenauthorization.models.Response;
+import com.learn.auth.jwt.jwttokenauthorization.models.core.JwtRequest;
+import com.learn.auth.jwt.jwttokenauthorization.models.core.JwtResponse;
+import com.learn.auth.jwt.jwttokenauthorization.models.core.Response;
 import com.learn.auth.jwt.jwttokenauthorization.service.AccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

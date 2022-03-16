@@ -2,9 +2,9 @@ package com.learn.auth.jwt.jwttokenauthorization.service;
 
 import com.learn.auth.jwt.jwttokenauthorization.config.JwtToken;
 import com.learn.auth.jwt.jwttokenauthorization.enums.ResponseCode;
-import com.learn.auth.jwt.jwttokenauthorization.models.JwtRequest;
-import com.learn.auth.jwt.jwttokenauthorization.models.JwtResponse;
-import com.learn.auth.jwt.jwttokenauthorization.models.Response;
+import com.learn.auth.jwt.jwttokenauthorization.models.core.JwtRequest;
+import com.learn.auth.jwt.jwttokenauthorization.models.core.JwtResponse;
+import com.learn.auth.jwt.jwttokenauthorization.models.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +23,7 @@ public class AccessService {
 
   @Autowired private AuthenticationManager authenticationManager;
   @Autowired private JwtToken jwtToken;
-  @Autowired private JwtUserDetailsService jwtUserDetailsService;
+  @Autowired private UserDetailsService userDetailsService;
 
   public Response<JwtResponse> authenticateUser(JwtRequest jwtRequest) throws Exception {
     Response<JwtResponse> response = new Response<>();
@@ -34,7 +34,7 @@ public class AccessService {
       return response;
     }
     final UserDetails userDetails =
-        jwtUserDetailsService.loadUserByUsername(jwtRequest.getUsername());
+        userDetailsService.loadUserByUsername(jwtRequest.getUsername());
     final String token = jwtToken.generateToken(userDetails);
     log.trace("Token generated successfully"+token);
     response.setResponseCode(ResponseCode.SUCCESS.getCode());

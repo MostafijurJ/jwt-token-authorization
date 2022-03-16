@@ -1,14 +1,13 @@
 package com.learn.auth.jwt.jwttokenauthorization.repository;
 
-import com.learn.auth.jwt.jwttokenauthorization.entity.UserInfo;
+import com.learn.auth.jwt.jwttokenauthorization.entity.UserInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserInfoRepository extends JpaRepository<UserInfo,Integer> {
+public interface UserInfoRepository extends JpaRepository<UserInfoEntity,Integer> {
 
-  Boolean existsByUsername(String username);
-  UserInfo findByUsername(String username);
-
-
+  Boolean existsByUserName(String username);
+  Boolean existsByEmail(String email);
+  UserInfoEntity findByUserName(String username);
 }

@@ -1,7 +1,7 @@
 package com.learn.auth.jwt.jwttokenauthorization.config;
 
-import com.learn.auth.jwt.jwttokenauthorization.JwtRequestFilter;
-import com.learn.auth.jwt.jwttokenauthorization.service.JwtUserDetailsService;
+import com.learn.auth.jwt.jwttokenauthorization.filter.JwtRequestFilter;
+import com.learn.auth.jwt.jwttokenauthorization.service.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,33 +16,27 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+  @Autowired private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-  @Autowired
-  private JwtUserDetailsService jwtUserDetailsService;
+  @Autowired private UserDetailsService userDetailsService;
 
-  @Autowired
-  private JwtRequestFilter jwtRequestFilter;
+  @Autowired private JwtRequestFilter jwtRequestFilter;
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-    auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
-
+    auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
   }
 
   @Bean
-  public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception{
+  public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception {
     return new JwtAuthenticationEntryPoint();
   }
-
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -53,26 +47,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   public AuthenticationManager authenticationManagerBean() throws Exception {
     return super.authenticationManagerBean();
-
   }
 
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-    httpSecurity.csrf().disable()
-
-        .authorizeRequests().antMatchers("/authenticate","/user").permitAll().
-
-        anyRequest().authenticated().and().
-
-        exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-
+    httpSecurity
+        .csrf()
+        .disable()
+        .authorizeRequests()
+        .antMatchers("/authenticate", "/create")
+        .permitAll()
+        .anyRequest()
+        .authenticated()
+        .and()
+        .exceptionHandling()
+        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        .and()
+        .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
   }
-
 }
-
-

@@ -1,4 +1,4 @@
-package com.learn.auth.jwt.jwttokenauthorization.models;
+package com.learn.auth.jwt.jwttokenauthorization.models.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
