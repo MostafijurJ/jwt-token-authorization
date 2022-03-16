@@ -1,6 +1,5 @@
 package com.learn.auth.jwt.jwttokenauthorization.controller;
 
-
 import com.learn.auth.jwt.jwttokenauthorization.config.JwtToken;
 import com.learn.auth.jwt.jwttokenauthorization.models.JwtRequest;
 import com.learn.auth.jwt.jwttokenauthorization.models.JwtResponse;
@@ -18,25 +17,24 @@ import org.springframework.security.authentication.AuthenticationManager;
 @CrossOrigin
 public class AuthController {
 
-  @Autowired
-  private AuthenticationManager authenticationManager;
+  @Autowired private AuthenticationManager authenticationManager;
 
-  @Autowired
-  private JwtToken jwtToken;
+  @Autowired private JwtToken jwtToken;
 
-  @Autowired
-  private JwtUserDetailsService jwtUserDetailsService;
-
+  @Autowired private JwtUserDetailsService jwtUserDetailsService;
 
   @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-  public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+  public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
+      throws Exception {
 
+    var isAuthenticate =
+        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+    if(!(isAuthenticate.getStatusCode().is2xxSuccessful())) {
+      return ResponseEntity.ok("Authentication failed");
 
-    authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
-    final UserDetails userDetails = jwtUserDetailsService
-
-        .loadUserByUsername(authenticationRequest.getUsername());
+    }
+    final UserDetails userDetails =
+        jwtUserDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
     final String token = jwtToken.generateToken(userDetails);
 
@@ -44,22 +42,20 @@ public class AuthController {
 
   }
 
-  private void authenticate(String username, String password) throws Exception {
+  private ResponseEntity<?> authenticate(String username, String password) throws Exception {
 
     try {
 
-      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(username, password));
+    return ResponseEntity.ok("Successfully authenticated");
 
     } catch (DisabledException e) {
 
       throw new Exception("USER_DISABLED", e);
 
     } catch (BadCredentialsException e) {
-
       throw new Exception("INVALID_CREDENTIALS", e);
-
     }
-
   }
-
 }
