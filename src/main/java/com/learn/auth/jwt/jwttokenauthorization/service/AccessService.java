@@ -12,18 +12,23 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
 @Slf4j
 public class AccessService {
 
-  @Autowired private AuthenticationManager authenticationManager;
-  @Autowired private JwtToken jwtToken;
-  @Autowired private UserDetailsService userDetailsService;
+  @Autowired
+  private AuthenticationManager authenticationManager;
+  @Autowired
+  private JwtToken jwtToken;
+  @Autowired
+  private UserDetailsService userDetailsService;
 
   public Response<JwtResponse> authenticateUser(JwtRequest jwtRequest) throws Exception {
     Response<JwtResponse> response = new Response<>();
@@ -33,12 +38,11 @@ public class AccessService {
       response.setResponseMessages(authResp.getResponseMessages());
       return response;
     }
-    final UserDetails userDetails =
-        userDetailsService.loadUserByUsername(jwtRequest.getUsername());
+    final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsername());
     final String token = jwtToken.generateToken(userDetails);
-    log.trace("Token generated successfully"+token);
+    log.trace("Token generated successfully" + token);
     response.setResponseCode(ResponseCode.SUCCESS.getCode());
-    response.setItems(new JwtResponse(token));
+    response.setItems(new JwtResponse(token, userDetails.getUsername(), (Collection<GrantedAuthority>) userDetails.getAuthorities()));
     return response;
   }
 
@@ -52,7 +56,7 @@ public class AccessService {
       return response;
     } catch (DisabledException | BadCredentialsException e) {
       e.printStackTrace();
-      log.error("Invalid username/password supplied "+e.getMessage());
+      log.error("Invalid username/password supplied " + e.getMessage());
       response.setResponseCode(ResponseCode.BAD_REQUEST.getCode());
       response.setResponseMessages(List.of("Invalid username or password"));
       return response;

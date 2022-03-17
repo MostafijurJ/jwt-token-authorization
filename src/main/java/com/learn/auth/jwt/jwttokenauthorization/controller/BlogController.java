@@ -3,14 +3,14 @@ package com.learn.auth.jwt.jwttokenauthorization.controller;
 import com.learn.auth.jwt.jwttokenauthorization.entity.Blog;
 import com.learn.auth.jwt.jwttokenauthorization.repository.BlogRepository;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
 @RestController
 public class BlogController {
 
-  final
-  private BlogRepository blogRepository;
+  final private BlogRepository blogRepository;
 
   public BlogController(BlogRepository blogRepository) {
     this.blogRepository = blogRepository;

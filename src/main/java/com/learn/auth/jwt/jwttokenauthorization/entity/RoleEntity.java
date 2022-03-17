@@ -1,4 +1,3 @@
-/*
 package com.learn.auth.jwt.jwttokenauthorization.entity;
 
 import com.learn.auth.jwt.jwttokenauthorization.enums.ERole;
@@ -15,13 +14,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "role")
-public class Role {
+@SequenceGenerator(name="role_seq",sequenceName="ROLE_SEQ", allocationSize=1)
+public class RoleEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(generator = "role_seq")
   private Integer id;
 
   @Enumerated(EnumType.STRING)
-
   private ERole name;
+
 }
-*/
+

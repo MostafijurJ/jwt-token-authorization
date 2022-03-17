@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class AuthController {
 
-  @Autowired private AccessService accessService;
+  @Autowired
+  private AccessService accessService;
 
   @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
   public Response<JwtResponse> createAuthenticationToken(
