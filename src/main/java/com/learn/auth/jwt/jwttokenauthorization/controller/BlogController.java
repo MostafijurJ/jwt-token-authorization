@@ -1,7 +1,6 @@
 package com.learn.auth.jwt.jwttokenauthorization.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.learn.auth.jwt.jwttokenauthorization.entity.BlogEntity;
 import com.learn.auth.jwt.jwttokenauthorization.models.BlogPost;
 import com.learn.auth.jwt.jwttokenauthorization.models.core.Response;
 import com.learn.auth.jwt.jwttokenauthorization.repository.BlogRepository;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @JsonIgnoreProperties
@@ -25,43 +23,36 @@ public class BlogController {
   }
 
   @GetMapping("/blog")
-  public List<BlogEntity> index() {
-    return blogRepository.findAll();
+  public Response<List<BlogPost>> index() {
+    return blogPostService.getAllPosts();
   }
 
   @GetMapping("/blog/{id}")
-  public BlogEntity show(@PathVariable String id) {
-    int blogId = Integer.parseInt(id);
-    return blogRepository.findById(blogId).orElse(new BlogEntity());
+  public Response<BlogPost> showBlogPost(@PathVariable String id) {
+
+    return blogPostService.getPostById(Integer.parseInt(id));
   }
 
   @PostMapping("/blog/search")
-  public List<BlogEntity> search(@RequestBody Map<String, String> body) {
-    String searchTerm = body.get("text");
-    return blogRepository.findByTitleContainingOrContentContaining(searchTerm, searchTerm);
+  public Response<List<BlogPost>> searchPosts(@RequestBody String searchTerm) {
+    return blogPostService.searchPosts(searchTerm);
   }
 
 
   @PostMapping("/blog")
-  public Response<BlogPost> create(@RequestBody BlogPost blogPost) {
+  public Response<BlogPost> createPost(@RequestBody BlogPost blogPost) {
     return blogPostService.createPost(blogPost);
   }
 
   @PutMapping("/blog/{id}")
-  public BlogEntity update(@PathVariable String id, @RequestBody Map<String, String> body) {
-    int blogId = Integer.parseInt(id);
-    // getting blogEntity
-    BlogEntity blogEntity = blogRepository.findById(blogId).orElse(new BlogEntity());
-    blogEntity.setTitle(body.get("title"));
-    blogEntity.setContent(body.get("content"));
-    return blogRepository.save(blogEntity);
+  public Response<BlogPost> updatePost(@PathVariable String id, @RequestBody BlogPost blogPost) {
+    Integer blogId = Integer.parseInt(id);
+    return blogPostService.updatePost(blogId, blogPost);
   }
 
   @DeleteMapping("blog/{id}")
-  public boolean delete(@PathVariable String id){
-    int blogId = Integer.parseInt(id);
-    blogRepository.deleteById(blogId);
-    return true;
+  public Response delete(@PathVariable String id){
+    return blogPostService.deletePost(Integer.parseInt(id));
   }
 
 }

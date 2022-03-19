@@ -23,6 +23,9 @@ public class BlogEntity {
   private String title;
   private String content;
 
+  @Column(columnDefinition = "char default 'N'")
+  private char isDeleted;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "blog_tag", joinColumns = @JoinColumn(name = "blog_id"),
       inverseJoinColumns = @JoinColumn(name = "tag_id"))

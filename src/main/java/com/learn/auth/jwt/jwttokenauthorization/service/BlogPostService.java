@@ -4,6 +4,7 @@ import com.learn.auth.jwt.jwttokenauthorization.entity.BlogEntity;
 import com.learn.auth.jwt.jwttokenauthorization.entity.RoleEntity;
 import com.learn.auth.jwt.jwttokenauthorization.entity.UserInfoEntity;
 import com.learn.auth.jwt.jwttokenauthorization.enums.ResponseCode;
+import com.learn.auth.jwt.jwttokenauthorization.enums.YesNo;
 import com.learn.auth.jwt.jwttokenauthorization.exceptions.ValidationException;
 import com.learn.auth.jwt.jwttokenauthorization.models.BlogPost;
 import com.learn.auth.jwt.jwttokenauthorization.models.UserInfo;
@@ -56,6 +57,90 @@ public class BlogPostService {
     }
     return response;
   }
+
+  public Response<List<BlogPost>> getAllPosts(){
+    Response<List<BlogPost>> response = new Response<>();
+    List<BlogEntity> blogEntities = blogRepository.findByIsDeleted(YesNo.NO.getValue());
+    List<BlogPost> blogPosts = new ArrayList<>();
+    blogEntities.forEach(blogEntity -> {
+      BlogPost blogPost = new BlogPost();
+      BeanUtils.copyProperties(blogEntity, blogPost);
+      blogPost.setUserInfo(entityToDomain(blogEntity.getUserInfoEntities()));
+      blogPosts.add(blogPost);
+    });
+    response.setItems(blogPosts);
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    return response;
+  }
+
+  public Response<List<BlogPost>> searchPosts(String searchText){
+    Response<List<BlogPost>> response = new Response<>();
+    List<BlogEntity> blogEntities = blogRepository.findByIsDeletedAndTitleContainingOrContentContaining(YesNo.NO.getValue(), searchText,searchText);
+    if(ObjectUtils.isEmpty(blogEntities)){
+      response.setResponseCode(ResponseCode.NOT_FOUND.getCode());
+      response.setResponseMessages(List.of("No blog post found"));
+      return response;
+    }
+    List<BlogPost> blogPosts = new ArrayList<>();
+    blogEntities.forEach(blogEntity -> {
+      BlogPost blogPost = new BlogPost();
+      BeanUtils.copyProperties(blogEntity, blogPost);
+      blogPost.setUserInfo(entityToDomain(blogEntity.getUserInfoEntities()));
+      blogPosts.add(blogPost);
+    });
+    response.setItems(blogPosts);
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    return response;
+  }
+
+  public Response<BlogPost> updatePost(Integer id, BlogPost blogPost) {
+    Response<BlogPost> response = new Response<>();
+    BlogEntity blogEntity = blogRepository.findById(id).orElseThrow(
+        () -> new ValidationException("Post's not found, try with different id")
+    );
+    BeanUtils.copyProperties(blogPost, blogEntity);
+    blogEntity.setUserInfoEntities(makeUserInfoEntity(getCurrentUserDetails()));
+    try {
+      blogRepository.save(blogEntity);
+    }catch (Exception e){
+      log.error("Error while updating blog post", e);
+    }
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    response.setItems(blogPost);
+
+    return response;
+  }
+
+  public Response<BlogPost> getPostById(Integer id){
+    Response<BlogPost> response = new Response<>();
+    BlogEntity blogEntity = blogRepository.findById(id).orElseThrow(
+        () -> new ValidationException("Blog post not found")
+    );
+
+    if(ObjectUtils.isEmpty(blogEntity)){
+      response.setResponseCode(ResponseCode.NOT_FOUND.getCode());
+      response.setResponseMessages(List.of("Blog post not found"));
+      return response;
+    }
+    BlogPost blogPost = new BlogPost();
+    BeanUtils.copyProperties(blogEntity, blogPost);
+    blogPost.setUserInfo(entityToDomain(blogEntity.getUserInfoEntities()));
+    response.setItems(blogPost);
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    return response;
+  }
+
+  public Response deletePost(Integer parseInt) {
+    Response response = new Response();
+    BlogEntity blogEntity = blogRepository.findById(parseInt).orElseThrow(
+        () -> new ValidationException("Blog post not found"));
+    blogEntity.setIsDeleted(YesNo.YES.getValue());
+    blogRepository.save(blogEntity);
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    response.setResponseMessages(List.of("Blog post deleted successfully"));
+    return response;
+  }
+
 
   private UserDetails getCurrentUserDetails() {
     UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -10,5 +10,7 @@ import java.util.List;
 public interface BlogRepository extends JpaRepository<BlogEntity,Integer> {
 
   List<BlogEntity> findByTitleContainingOrContentContaining(String text, String textAgain);
+  List<BlogEntity> findByIsDeleted(char isDeleted);
 
+  List<BlogEntity> findByIsDeletedAndTitleContainingOrContentContaining(char value, String searchText, String searchTextAgain);
 }
