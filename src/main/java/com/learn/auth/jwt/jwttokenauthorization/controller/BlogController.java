@@ -1,5 +1,6 @@
 package com.learn.auth.jwt.jwttokenauthorization.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.learn.auth.jwt.jwttokenauthorization.entity.BlogEntity;
 import com.learn.auth.jwt.jwttokenauthorization.models.BlogPost;
 import com.learn.auth.jwt.jwttokenauthorization.models.core.Response;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@JsonIgnoreProperties
 public class BlogController {
 
   @Autowired
