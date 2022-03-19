@@ -10,4 +10,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity,Integer
   Boolean existsByUserName(String username);
   Boolean existsByEmail(String email);
   UserInfoEntity findByUserName(String username);
+
 }
