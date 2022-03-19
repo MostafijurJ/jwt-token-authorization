@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @JsonIgnoreProperties
-public class BlogController {
+public class BlogController implements BlogApi {
 
   @Autowired
   private BlogPostService blogPostService;

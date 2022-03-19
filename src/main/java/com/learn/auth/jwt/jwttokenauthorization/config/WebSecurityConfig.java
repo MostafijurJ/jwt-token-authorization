@@ -30,6 +30,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private JwtRequestFilter jwtRequestFilter;
 
+  private static final String[] AUTH_WHITELIST = {
+      "/authenticate",
+      "/create",
+      "/swagger-resources/**",
+      "/swagger-ui/**",
+      "/v3/api-docs",
+      "/webjars/**"
+  };
+
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
@@ -54,22 +63,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception {
-
     httpSecurity
+        .cors()
+        .and()
         .csrf()
         .disable()
-        .authorizeRequests()
-        .antMatchers("/authenticate", "/create")
-        .permitAll()
-        .anyRequest()
-        .authenticated()
+        .headers()
+        .frameOptions()
+        .deny()
         .and()
-        .exceptionHandling()
-        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-        .and()
-        .sessionManagement()
+        // dont authenticate this particular request
+        .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
+        // all other requests need to be authenticated
+        .anyRequest().authenticated().and().
+        // make sure we use stateless session; session won't be
+        // used to store user's state.
+            exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
+    // Add a filter to validate the tokens with every request
     httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
   }
 }
