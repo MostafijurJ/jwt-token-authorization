@@ -14,12 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "blog")
-@SequenceGenerator(name = "blog_seq", sequenceName = "blog_seq", allocationSize = 1)
-public class BlogEntity {
+public class BlogEntity extends BaseEntity {
 
-  @Id
-  @GeneratedValue(generator = "blog_seq", strategy = GenerationType.SEQUENCE)
-  private int id;
   private String title;
   private String content;
 
