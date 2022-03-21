@@ -118,7 +118,7 @@ public class UserDetailsService
       throw new ValidationException("User not found with username: " + userName);
     }
     userInfoEntity.setActive(Boolean.FALSE);
-    userInfoRepository.save(userInfoEntity);
+    saveUser(userInfoEntity);
     response.setResponseCode(ResponseCode.SUCCESS.getCode());
     return response;
   }
