@@ -19,10 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class UserDetailsService
@@ -87,6 +84,46 @@ public class UserDetailsService
     return userInfoRepository.save(userInfoEntity);
   }
 
+  public Response<UserInfo> updateUser(UserInfo userInfo) {
+    Response<UserInfo> response = new Response<>();
+    UserInfoEntity userInfoEntity = userInfoRepository.findByUserName(userInfo.getUserName());
+    if (ObjectUtils.isEmpty(userInfoEntity)) {
+      throw new ValidationException("User not found with username: " + userInfo.getUserName());
+    }
+    BeanUtils.copyProperties(userInfo, userInfoEntity, "password");
+    userInfoEntity.setRoles(setUserRole(userInfo.getRoles()));
+    UserInfoEntity savedUserInfoEntity = saveUser(userInfoEntity);
+    BeanUtils.copyProperties(savedUserInfoEntity, userInfo, "password");
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    response.setItems(userInfo);
+    return response;
+  }
+
+  public Response<List<UserInfo>> getAllActiveUsers(){
+    Response<List<UserInfo>> response = new Response<>();
+    List<UserInfoEntity> userInfoEntities = userInfoRepository.findByIsActive(Boolean.TRUE);
+    if(ObjectUtils.isEmpty(userInfoEntities)) {
+      throw new ValidationException("No user found");
+    }
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    response.setItems(convertToUserInfo(userInfoEntities));
+    return response;
+  }
+
+
+  public Response<UserInfo> deleteUser(String userName) {
+    Response<UserInfo> response = new Response<>();
+    UserInfoEntity userInfoEntity = userInfoRepository.findByUserName(userName);
+    if (ObjectUtils.isEmpty(userInfoEntity)) {
+      throw new ValidationException("User not found with username: " + userName);
+    }
+    userInfoEntity.setActive(Boolean.FALSE);
+    userInfoRepository.save(userInfoEntity);
+    response.setResponseCode(ResponseCode.SUCCESS.getCode());
+    return response;
+  }
+
+
   private String getEncodedPassword(String password) {
     return new BCryptPasswordEncoder().encode(password);
   }
@@ -117,5 +154,25 @@ public class UserDetailsService
       throw new ValidationException("Role not found in system! Please check role name");
     return roleEntity;
   }
+
+  private List<UserInfo> convertToUserInfo(List<UserInfoEntity> userInfoEntities) {
+    List<UserInfo> userInfos =  new ArrayList<>();
+    for (UserInfoEntity userInfoEntity : userInfoEntities) {
+      UserInfo userInfo = new UserInfo();
+      BeanUtils.copyProperties(userInfoEntity, userInfo);
+      userInfo.setRoles(getRoleList(userInfoEntity.getRoles()));
+      userInfos.add(userInfo);
+    }
+    return userInfos;
+  }
+
+  private List<String> getRoleList(Set<RoleEntity> roleEntities) {
+    List<String> roles = new ArrayList<>();
+    for (RoleEntity roleEntity : roleEntities) {
+      roles.add(roleEntity.getName().toString());
+    }
+    return roles;
+  }
+
 
 }

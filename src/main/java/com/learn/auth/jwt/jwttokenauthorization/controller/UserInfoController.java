@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserInfoController {
+public class UserInfoController implements UserInfoApi {
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -18,6 +18,24 @@ public class UserInfoController {
   public Response<UserInfo> create(@RequestBody UserInfo userInfo){
     return userDetailsService.createUser(userInfo);
   }
+  @Override
+  public Response<UserInfo> createUser(UserInfo userInfo) {
+    return null;
+  }
 
+  @Override
+  public Response<UserInfo> getUserInfo(UserInfo userInfo) {
+    return null;
+  }
+
+  @Override
+  public Response<UserInfo> updateUser(UserInfo userInfo) {
+    return userDetailsService.updateUser(userInfo);
+  }
+
+  @Override
+  public Response<UserInfo> deleteUser(String userId) {
+    return null;
+  }
 }
 
