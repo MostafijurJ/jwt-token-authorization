@@ -4,6 +4,8 @@ import com.learn.auth.jwt.jwttokenauthorization.entity.UserInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfoEntity,Integer> {
 
@@ -11,4 +13,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity,Integer
   Boolean existsByEmail(String email);
   UserInfoEntity findByUserName(String username);
 
+  List<UserInfoEntity> findByIsActive(boolean b);
 }

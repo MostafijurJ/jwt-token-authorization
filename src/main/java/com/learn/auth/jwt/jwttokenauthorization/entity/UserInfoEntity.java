@@ -14,17 +14,14 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_info")
-@SequenceGenerator(name = "user_seq", sequenceName = "USER_SEQ", allocationSize = 1)
-public class UserInfoEntity {
-  @Id
-  @GeneratedValue(generator = "user_seq")
-  private int id;
+public class UserInfoEntity extends BaseEntity {
 
   private String userName;
   private String password;
   private String fullName;
   private String email;
-
+  @Column(columnDefinition = "boolean default true")
+  private boolean isActive;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
