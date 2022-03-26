@@ -4,8 +4,6 @@ import com.learn.auth.jwt.jwttokenauthorization.models.UserInfo;
 import com.learn.auth.jwt.jwttokenauthorization.models.core.Response;
 import com.learn.auth.jwt.jwttokenauthorization.service.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -14,13 +12,9 @@ public class UserInfoController implements UserInfoApi {
   @Autowired
   private UserDetailsService userDetailsService;
 
-  @PostMapping("/create")
-  public Response<UserInfo> create(@RequestBody UserInfo userInfo){
-    return userDetailsService.createUser(userInfo);
-  }
   @Override
   public Response<UserInfo> createUser(UserInfo userInfo) {
-    return null;
+    return userDetailsService.createUser(userInfo);
   }
 
   @Override
